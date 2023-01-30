@@ -2,57 +2,27 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+use GeekBrains\LevelTwo\Blog\Commands\Arguments;
 use GeekBrains\LevelTwo\Blog\User;
 use GeekBrains\LevelTwo\Blog\Post;
 use GeekBrains\LevelTwo\Blog\Comment;
-use GeekBrains\LevelTwo\Blog\Repositories\InMemoryUsersRepo;
+use GeekBrains\LevelTwo\Blog\Repositories\UserRepository\SqliteUsersRepo;
 use GeekBrains\LevelTwo\Blog\Exceptions\UserNotFoundException;
+use GeekBrains\LevelTwo\Blog\UUID;
+use GeekBrains\LevelTwo\Blog\Commands\CreateUserCommand;
 
-// spl_autoload_register(function ($class) {
+$connection = new PDO('sqlite:' . __DIR__ . '/blog.sqlite');
 
-//     $file = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
-//     $file = str_replace('GeekBrains', 'src', $file);
-//     //print_r($file . PHP_EOL);
-//     if (file_exists($file)) {
-//         require_once $file;
-//     }
-// });
+$userRepo = new SqliteUsersRepo($connection);
 
-$faker = Faker\Factory::create('ru_RU');
+$user = new User(UUID::random(), 'user', 'Petr', "Petrov");
 
-$route = $argv[1] ?? null;
-
-switch ($route) {
-    case 'user':
-        $user = new User($faker->randomDigit(), $faker->firstName(), $faker->lastName());
-        echo $user;
-        break;
-
-    case 'post':
-        $user = new User($faker->randomDigit(), $faker->firstName(), $faker->lastName());
-        $post = new Post($faker->randomDigit(), $user->getId(), $faker->word(), $faker->sentence());
-        echo $user;
-        echo $post;
-        break;
-
-    case 'comment':
-        $user = new User($faker->randomDigit(), $faker->firstName(), $faker->lastName());
-        $post = new Post($faker->randomDigit(), $user->getId(), $faker->word(), $faker->sentence());
-        $comment = new Comment($faker->randomDigit(), $user->getId(), $post->getId(), $faker->sentence());
-        echo $user;
-        echo $post;
-        echo $comment;
-        break;
-
-    default:
-        echo 'Введите параметр';
-        break;
+$command = new CreateUserCommand($userRepo);
+//$userRepo->saveUser($user);
+try {
+    $command->handle(Arguments::fromArgv($argv));
+    //echo $userRepo->getUserByUuid(new UUID("93257c3f-e5fd-40ce-9aee-6b4599bce2d0"));
+    //echo $userRepo->getUserByName('user1');
+} catch (Exception $th) {
+    echo $th->getMessage();
 }
-
-// $userRepo = new InMemoryUsersRepo();
-
-// try {
-//     $userRepo->getUser(99); 
-// } catch (UserNotFoundException $exp) {
-//     echo $exp->getMessage(); 
-// }

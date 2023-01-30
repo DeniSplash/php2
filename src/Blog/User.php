@@ -4,25 +4,28 @@ namespace GeekBrains\LevelTwo\Blog;
 
 class User
 {
-    private int $id;
+    private UUID $uuid;
+
+    private string $userName;
     private string $lastName;
     private string $firstName;
 
-    public function __construct(int $id, string $lastName, string $firstName)
+    public function __construct(UUID $uuid, string $userName, string $lastName, string $firstName)
     {
-        $this->id = $id;
+        $this->uuid = $uuid;
+        $this->userName = $userName;
         $this->lastName = $lastName;
         $this->firstName = $firstName;
     }
 
-    public function getId(): int
+    public function getUuid(): UUID 
     {
-        return $this->id;
+        return $this->uuid;
     }
 
-    public function setId(int $id): self
+    public function setUuid(UUID $uuid): self
     {
-        $this->id = $id;
+        $this->uuid = $uuid;
         return $this;
     }
 
@@ -50,6 +53,15 @@ class User
 
     public function __toString(): string
     {
-        return "Пользователь $this->id с именем $this->lastName и фамилией $this->firstName" . PHP_EOL;
+        return "Пользователь $this->uuid с именем $this->lastName и фамилией $this->firstName" . PHP_EOL;
     }
+
+	public function getUserName(): string {
+		return $this->userName;
+	}
+
+	public function setUserName(string $userName): self {
+		$this->userName = $userName;
+		return $this;
+	}
 }

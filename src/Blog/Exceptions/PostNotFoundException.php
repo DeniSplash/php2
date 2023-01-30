@@ -2,7 +2,8 @@
 
 namespace GeekBrains\LevelTwo\Blog\Exceptions;
 
-class UserNotFoundException extends AppException
+
+class PostNotFoundException extends AppException
 {
     
 }

@@ -5,34 +5,34 @@ namespace GeekBrains\LevelTwo\Blog;
 class Post
 
 {
-    private int $id;
-    private int $idUser;
+    private UUID $uuid;
+    private UUID $uuidUser;
     private string $article;
     private string $text;
 
-    public function __construct(int $id, int $idUser, string $article, string $text)
+    public function __construct(UUID $uuid, UUID $uuidUser, string $article, string $text)
     {
-        $this->id = $id;
-        $this->idUser = $idUser;
+        $this->uuid = $uuid;
+        $this->uuidUser = $uuidUser;
         $this->article = $article;
         $this->text = $text;
     }
 
-	public function getId(): int {
-		return $this->id;
+	public function getUuid(): UUID {
+		return $this->uuid;
 	}
 
-	public function setId(int $id): self {
-		$this->id = $id;
+	public function setUuid(UUID $uuid): self {
+		$this->uuid = $uuid;
 		return $this;
 	}
 
-    public function getIdUser(): int {
-		return $this->idUser;
+    public function getUuidUser(): UUID {
+		return $this->uuidUser;
 	}
 
-	public function setIdUser(int $idUser): self {
-		$this->idUser = $idUser;
+	public function setIdUser(UUID $uuidUser): self {
+		$this->uuidUser = $uuidUser;
 		return $this;
 	}
 
@@ -56,6 +56,6 @@ class Post
 
     public function __toString(): string
     {
-        return "Пост $this->id, пользователя $this->idUser, загаловок $this->article, текст $this->text" . PHP_EOL;
+        return "Пост $this->uuid, пользователя $this->uuidUser, загаловок $this->article, текст $this->text" . PHP_EOL;
     }
 }

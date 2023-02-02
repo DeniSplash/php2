@@ -4,44 +4,44 @@ namespace GeekBrains\LevelTwo\Blog;
 
 class Comment 
 {
-    private int $id;
-    private int $idUser;
-    private int $idPost;
+    private UUID $uuid;
+    private UUID $uuidUser;
+    private UUID $uuidPost;
     private string $text;
 
-    public function __construct(int $id, int $idUser, int $idPost, string $text)
+    public function __construct(UUID $uuid, UUID $uuidUser, UUID $uuidPost, string $text)
     {
-        $this->id = $id;
-        $this->idUser = $idUser;
-        $this->idPost = $idPost;
+        $this->uuid = $uuid;
+        $this->uuidUser = $uuidUser;
+        $this->uuidPost = $uuidPost;
         $this->text = $text;
 
     }
 
-	public function getId(): int {
-		return $this->id;
+	public function getUuid(): UUID {
+		return $this->uuid;
 	}
 	
-	public function setId(int $id): self {
-		$this->id = $id;
+	public function setUuid(UUID $uuid): self {
+		$this->uuid = $uuid;
 		return $this;
 	}
 
-	public function getIdUser(): int {
-		return $this->idUser;
+	public function getUuidUser(): UUID {
+		return $this->uuidUser;
 	}
 	
-	public function setIdUser(int $idUser): self {
-		$this->idUser = $idUser;
+	public function setUuidUser(UUID $uuidUser): self {
+		$this->uuidUser = $uuidUser;
 		return $this;
 	}
 
-	public function getIdPost(): int {
-		return $this->idPost;
+	public function getUuidPost(): UUID {
+		return $this->uuidPost;
 	}
 	
-	public function setIdPost(int $idPost): self {
-		$this->idPost = $idPost;
+	public function setIdPost(UUID $uuidPost): self {
+		$this->uuidPost = $uuidPost;
 		return $this;
 	}
 
@@ -56,6 +56,6 @@ class Comment
 
     public function __toString(): string
     {
-        return "Комментарий $this->id, к посту $this->idPost, текст $this->text" . PHP_EOL;
+        return "Комментарий $this->uuid, к посту $this->uuidPost, текст $this->text" . PHP_EOL;
     }
 }

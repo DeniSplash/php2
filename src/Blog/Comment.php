@@ -12,8 +12,8 @@ class Comment
     public function __construct(UUID $uuid, UUID $uuidUser, UUID $uuidPost, string $text)
     {
         $this->uuid = $uuid;
+		$this->uuidPost = $uuidPost;
         $this->uuidUser = $uuidUser;
-        $this->uuidPost = $uuidPost;
         $this->text = $text;
 
     }

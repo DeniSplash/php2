@@ -2,6 +2,8 @@
 
 namespace GeekBrains\LevelTwo\Blog\Repositories\UserRepository;
 
+use GeekBrains\LevelTwo\Blog\Commands\Arguments;
+use GeekBrains\LevelTwo\Blog\Commands\CreateUserCommand;
 use GeekBrains\LevelTwo\Blog\Exceptions\UserNotFoundException;
 use GeekBrains\LevelTwo\Blog\User;
 use GeekBrains\LevelTwo\Blog\UUID;
@@ -86,6 +88,5 @@ class SqliteUsersRepo implements UserRepoInterfaces
             );
         
     }
-    
 
 }

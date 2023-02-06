@@ -6,7 +6,7 @@ use GeekBrains\LevelTwo\Blog\Exceptions\CommentNotFoundException;
 use GeekBrains\LevelTwo\Blog\Comment;
 use GeekBrains\LevelTwo\Blog\UUID;
 
-class InMemoryUsersRepo implements CommentRepoInterfaces
+class InMemoryCommentsRepo implements CommentRepoInterfaces
 {
     private array $comments = [];
 

@@ -8,7 +8,7 @@ use GeekBrains\LevelTwo\Blog\Repositories\CommentRepository\CommentRepoInterface
 use GeekBrains\LevelTwo\Blog\UUID;
 use \PDO;
 
-class SqliteUsersRepo implements CommentRepoInterfaces
+class SqliteCommentsRepo implements CommentRepoInterfaces
 { 
     private PDO $connection;
 
@@ -20,7 +20,7 @@ class SqliteUsersRepo implements CommentRepoInterfaces
     {
 
         $statement = $this->connection->prepare(
-            'INSERT INTO users (uuid, post_uuid, author_uuid, text)
+            'INSERT INTO comments (uuid, post_uuid, author_uuid, text)
             VALUES (:uuid, :post_uuid, :author_uuid, :text)'
             );
             

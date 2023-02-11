@@ -27,5 +27,10 @@ class InMemoryPostsRepo implements PostRepoInterfaces
         throw new PostNotFoundException("Пост не найден $uuid"); 
     } 
 
+    public function delete (UUID $uuid): void
+    {
+        
+    }
+
 
 }

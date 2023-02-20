@@ -10,19 +10,13 @@ use GeekBrains\LevelTwo\Blog\Repositories\UserRepository\SqliteUsersRepo;
 use GeekBrains\LevelTwo\Blog\Exceptions\UserNotFoundException;
 use GeekBrains\LevelTwo\Blog\UUID;
 use GeekBrains\LevelTwo\Blog\Commands\CreateUserCommand;
+use GeekBrains\LevelTwo\Blog\Exceptions\AppException;
 
-// $connection = new PDO('sqlite:' . __DIR__ . '/blog.sqlite');
+$container = require __DIR__ . '/bootstrap.php';
 
-// $userRepo = new SqliteUsersRepo($connection);
-
-// $user = new User(UUID::random(), 'user', 'Petr', "Petrov");
-
-//$command = new CreateUserCommand($userRepo);
-//$userRepo->saveUser($user);
+$command = $container->get(CreateUserCommand::class);
 try {
-    //$command->handle(Arguments::fromArgv($argv));
-    //echo $userRepo->getUserByUuid(new UUID("93257c3f-e5fd-40ce-9aee-6b4599bce2d0"));
-    //echo $userRepo->getUserByName('user1');
-} catch (Exception $th) {
-    //echo $th->getMessage();
+    $command->handle(Arguments::fromArgv($argv));
+} catch (AppException $e) {
+    echo "{$e->getMessage()}\n";
 }

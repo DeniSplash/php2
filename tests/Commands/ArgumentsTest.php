@@ -33,18 +33,18 @@ class ArgumentsTest extends TestCase
     public function argumentsProvider(): iterable
     {
         return [
-        ['some_string', 'some_string'], 
-        [' some_string', 'some_string'], 
-        [' some_string ', 'some_string'],
-        [123, '123'],
-        [12.3, '12.3'],
+            ['some_string', 'some_string'],
+            [' some_string', 'some_string'],
+            [' some_string ', 'some_string'],
+            [123, '123'],
+            [12.3, '12.3'],
         ];
     }
 
     /**
-* @dataProvider argumentsProvider
-*/
-    public function testItConvertsArgumentsToStrings($inputValue, $expectedValue): void 
+     * @dataProvider argumentsProvider
+     */
+    public function testItConvertsArgumentsToStrings($inputValue, $expectedValue): void
     {
         $arguments = new Arguments(['some_key' => $inputValue]);
         $value = $arguments->get('some_key');

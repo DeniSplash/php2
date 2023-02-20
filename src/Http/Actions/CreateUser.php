@@ -29,7 +29,7 @@ class CreateUser implements ActionInterface
                 $newUserUuid,
                 $request->jsonBodyField('username'),
                 $request->jsonBodyField('last_name'),
-                $request->jsonBodyField('first_name') 
+                $request->jsonBodyField('first_name')
 
             );
 

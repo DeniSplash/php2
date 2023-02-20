@@ -16,41 +16,44 @@ use InvalidArgumentException;
 
 class CreatePost implements ActionInterface
 {
-    public function __construct(private PostRepoInterfaces $postsRepository,
-    private UserRepoInterfaces $usersRepository,) {
+    public function __construct(
+        private PostRepoInterfaces $postsRepository,
+        private UserRepoInterfaces $usersRepository,
+    )
+    {
     }
     public function handle(Request $request): Response
     {
 
-    try {
-        $authorUuid = new UUID($request->jsonBodyField('author_uuid'));
-    } catch (HttpException | InvalidArgumentException $e) {
-        return new ErrorResponse($e->getMessage());
-    }
+        try {
+            $authorUuid = new UUID($request->jsonBodyField('author_uuid'));
+        } catch (HttpException | InvalidArgumentException $e) {
+            return new ErrorResponse($e->getMessage());
+        }
 
-    try {
-        $this->usersRepository->getUserByUuid($authorUuid);
-    } catch (UserNotFoundException $e) {
-        return new ErrorResponse($e->getMessage());
-    }
+        try {
+            $this->usersRepository->getUserByUuid($authorUuid);
+        } catch (UserNotFoundException $e) {
+            return new ErrorResponse($e->getMessage());
+        }
 
-    $newPostUuid = UUID::random();
-    try {
+        $newPostUuid = UUID::random();
+        try {
 
-        $post = new Post(
-        $newPostUuid,
-        $authorUuid,
-        $request->jsonBodyField('title'),
-        $request->jsonBodyField('text'),
-    );
-    } catch (HttpException $e) {
-        return new ErrorResponse($e->getMessage());
-    }
+            $post = new Post(
+                $newPostUuid,
+                $authorUuid,
+                $request->jsonBodyField('title'),
+                $request->jsonBodyField('text'),
+            );
+        } catch (HttpException $e) {
+            return new ErrorResponse($e->getMessage());
+        }
 
-    $this->postsRepository->savePost($post);
+        $this->postsRepository->savePost($post);
 
-    return new SuccessfulResponse([
-        'uuid' => (string)$newPostUuid,
-    ]);
+        return new SuccessfulResponse([
+            'uuid' => (string) $newPostUuid,
+        ]);
     }
 }

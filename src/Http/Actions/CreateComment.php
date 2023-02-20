@@ -18,29 +18,30 @@ use InvalidArgumentException;
 
 class CreateComment implements ActionInterface
 {
-    public function __construct(private CommentRepoInterfaces $commentRepoInterfaces) {
+    public function __construct(private CommentRepoInterfaces $commentRepoInterfaces)
+    {
     }
     public function handle(Request $request): Response
     {
 
 
-    $newCommentUuid = UUID::random();
-    try {
+        $newCommentUuid = UUID::random();
+        try {
 
-        $comment = new Comment(
-        $newCommentUuid,
-        $request->jsonBodyField('uuid_post'),
-        $request->jsonBodyField('uuid_user'),
-        $request->jsonBodyField('text'),
-    );
-    } catch (HttpException $e) {
-        return new ErrorResponse($e->getMessage());
-    }
+            $comment = new Comment(
+                $newCommentUuid,
+                $request->jsonBodyField('uuid_post'),
+                $request->jsonBodyField('uuid_user'),
+                $request->jsonBodyField('text'),
+            );
+        } catch (HttpException $e) {
+            return new ErrorResponse($e->getMessage());
+        }
 
-    $this->commentRepoInterfaces->saveComment($comment);
+        $this->commentRepoInterfaces->saveComment($comment);
 
-    return new SuccessfulResponse([
-        'uuid' => (string)$newCommentUuid,
-    ]);
+        return new SuccessfulResponse([
+            'uuid' => (string) $newCommentUuid,
+        ]);
     }
 }

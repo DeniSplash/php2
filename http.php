@@ -2,99 +2,51 @@
 
 use GeekBrains\LevelTwo\Blog\Exceptions\AppException;
 use GeekBrains\LevelTwo\Blog\Exceptions\HttpException;
-use GeekBrains\LevelTwo\Blog\Repositories\CommentRepository\SqliteCommentsRepo;
-use GeekBrains\LevelTwo\Blog\Repositories\PostRepository\SqlitePostRepo;
-use GeekBrains\LevelTwo\Blog\Repositories\UserRepository\SqliteUsersRepo;
-use GeekBrains\LevelTwo\Http\Actions\CreatePost;
-use GeekBrains\LevelTwo\Http\Actions\CreateComment;
-use GeekBrains\LevelTwo\Http\Actions\CreateUser;
 use GeekBrains\LevelTwo\Http\Actions\FindByUsername;
-use GeekBrains\LevelTwo\Http\Actions\DeletePost;
 use GeekBrains\LevelTwo\Http\ErrorResponse;
 use GeekBrains\LevelTwo\Http\Request;
-use GeekBrains\LevelTwo\Http\SuccessfulResponse;
 
-require_once __DIR__ . '/vendor/autoload.php';
-
-$request = new Request($_GET, $_SERVER, file_get_contents('php://input'),);
-
+$container = require __DIR__ . '/bootstrap.php';
 
 $request = new Request(
     $_GET,
     $_SERVER,
     file_get_contents('php://input'),
-    );
-    
-    try {
-        $path = $request->path();
-    } catch (HttpException) {
-        (new ErrorResponse)->send();
-        return;
-    }
-
-    try {
-
-    $method = $request->method();
-    } catch (HttpException) {
-
+);
+try {
+    $path = $request->path();
+} catch (HttpException) {
     (new ErrorResponse)->send();
     return;
-    }
-    $routes = [
+}
+try {
+    $method = $request->method();
+} catch (HttpException) {
+    (new ErrorResponse)->send();
+    return;
+}
 
-        'GET' => [
-            '/users/show' => new FindByUsername(
-                new SqliteUsersRepo(
-                new PDO('sqlite:' . __DIR__ . '/blog.sqlite')
-                )
-            ),
-        ],
-
-        'POST' => [
-            '/user/create' => new CreateUser(
-                new SqliteUsersRepo(
-                new PDO('sqlite:' . __DIR__ . '/blog.sqlite')
-            )
-            ), 
-
-            '/posts/create' => new CreatePost(
-                new SqlitePostRepo(
-                new PDO('sqlite:' . __DIR__ . '/blog.sqlite')
-                ),
-                new SqliteUsersRepo(
-                new PDO('sqlite:' . __DIR__ . '/blog.sqlite')
-                )
-                ),
-
-            '/posts/comment' => new CreateComment(
-                new SqliteCommentsRepo(
-                new PDO('sqlite:' . __DIR__ . '/blog.sqlite')
-                )
-            ),
-        ],
-
-        'DELETE' => [
-            '/posts' => new DeletePost(
-                new SqlitePostRepo(
-                    new PDO('sqlite:' . __DIR__ . '/blog.sqlite')
-                    ) 
-                ),
-                
-        ],
-
+$routes = [
+    'GET' => [
+        '/users/show' => FindByUsername::class,
+        '/posts/show' => FindByUuid::class,
+    ],
+    'POST' => [
+        '/posts/create' => CreatePost::class,
+    ],
 ];
-
 if (!array_key_exists($method, $routes)) {
-    (new ErrorResponse('Not found'))->send();
+    (new ErrorResponse("Route not found: $method $path"))->send();
     return;
 }
-
 if (!array_key_exists($path, $routes[$method])) {
-    (new ErrorResponse('Not found'))->send();
+    (new ErrorResponse("Route not found: $method $path"))->send();
     return;
 }
 
-$action = $routes[$method][$path];
+$actionClassName = $routes[$method][$path];
+
+$action = $container->get($actionClassName);
 
 try {
     $response = $action->handle($request);
@@ -102,4 +54,4 @@ try {
     (new ErrorResponse($e->getMessage()))->send();
 }
 
-$response->send();
+    $response->send();

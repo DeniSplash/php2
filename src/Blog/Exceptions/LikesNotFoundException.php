@@ -2,7 +2,7 @@
 
 namespace GeekBrains\LevelTwo\Blog\Exceptions;
 
-class InvalidArgumentException extends AppException
+class LikesNotFoundException extends AppException
 {
 
 }

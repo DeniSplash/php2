@@ -11,58 +11,58 @@ use \PDO;
 use \PDOStatement;
 
 class SqliteUsersRepo implements UserRepoInterfaces
-{ 
+{
     private PDO $connection;
 
     public function __construct(PDO $connection)
     {
         $this->connection = $connection;
-    } 
+    }
     public function saveUser(User $user): void
     {
 
         $statement = $this->connection->prepare(
             'INSERT INTO users (uuid, username, first_name, last_name)
             VALUES (:uuid, :username, :first_name, :last_name)'
-            );
-            
-            $statement->execute([
-            ':uuid' => (string)$user->getUuid(),
+        );
+
+        $statement->execute([
+            ':uuid' => (string) $user->getUuid(),
             ':username' => $user->getUserName(),
             ':first_name' => $user->getLastName(),
             ':last_name' => $user->getFirstName(),
-            ]);
+        ]);
     }
 
     public function getUserByUuid(UUID $uuid): User
     {
         $statement = $this->connection->prepare(
-        'SELECT * FROM users WHERE uuid = ?'
+            'SELECT * FROM users WHERE uuid = ?'
         );
 
-        $statement->execute([(string)$uuid]);
+        $statement->execute([(string) $uuid]);
 
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-    
+
         if (false === $result) {
             throw new UserNotFoundException(
-            "Пользователь не найден: $uuid"
+                "Пользователь не найден: $uuid"
             );
         }
-        
+
         return new User(
-        new UUID($result['uuid']),
-            $result['username'], 
-            $result['first_name'], 
+            new UUID($result['uuid']),
+            $result['username'],
+            $result['first_name'],
             $result['last_name']
         );
     }
 
     public function getUserByName(string $userName): User
     {
-        
+
         $statement = $this->connection->prepare(
-        'SELECT * FROM users WHERE username = :username'
+            'SELECT * FROM users WHERE username = :username'
         );
 
         $statement->execute([':username' => $userName,]);
@@ -73,20 +73,20 @@ class SqliteUsersRepo implements UserRepoInterfaces
     private function getUser(PDOStatement $statement, string $username): User
     {
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-    
+
         if (false === $result) {
             throw new UserNotFoundException(
-            "Пользователь не найден: $username"
+                "Пользователь не найден: $username"
             );
         }
 
         return new User(
             new UUID($result['uuid']),
-                $result['username'], 
-                $result['first_name'], 
-                $result['last_name']
-            );
-        
+            $result['username'],
+            $result['first_name'],
+            $result['last_name']
+        );
+
     }
 
 }

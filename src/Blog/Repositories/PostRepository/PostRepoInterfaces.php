@@ -9,5 +9,6 @@ interface PostRepoInterfaces
 {
     public function savePost(Post $post): void;
     public function getPostByUuid(UUID $uuid): Post;
+    public function delete(UUID $uuid): void;
 
 }

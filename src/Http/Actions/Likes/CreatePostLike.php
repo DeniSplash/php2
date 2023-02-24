@@ -15,12 +15,14 @@ use GeekBrains\LevelTwo\Http\ErrorResponse;
 use GeekBrains\LevelTwo\http\Request;
 use GeekBrains\LevelTwo\http\Response;
 use GeekBrains\LevelTwo\Http\SuccessfulResponse;
+use Psr\Log\LoggerInterface;
 
 class CreatePostLike implements ActionInterface
 {
     public   function __construct(
         private LikesRepositoryInterface $likesRepository,
         private PostRepoInterfaces $postRepository,
+        private LoggerInterface $logger,
     )
     {
     }
@@ -56,6 +58,7 @@ class CreatePostLike implements ActionInterface
         );
 
         $this->likesRepository->save($like);
+        $this->logger->info("Like created: $newLikeUuid");
 
         return new SuccessFulResponse(
             ['uuid' => (string)$newLikeUuid]

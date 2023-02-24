@@ -14,35 +14,28 @@ use GeekBrains\LevelTwo\Blog\Repositories\UsersRepository\UsersRepositoryInterfa
 
 class FindByUsername implements ActionInterface
 {
-// Нам понадобится репозиторий пользователей,
-// внедряем его контракт в качестве зависимости
-public function __construct(private UserRepoInterfaces $usersRepository)
-{
-}
-// Функция, описанная в контракте
-public function handle(Request $request): Response
-{
-    try {
-    // Пытаемся получить искомое имя пользователя из запроса
-    $username = $request->query('username');
-    } catch (HttpException $e) {
-    // Если в запросе нет параметра username -
-    // возвращаем неуспешный ответ,
-    // сообщение об ошибке берём из описания исключения
-        return new ErrorResponse($e->getMessage());
+
+    public function __construct(private UserRepoInterfaces $usersRepository)
+    {
     }
-    try {
-    // Пытаемся найти пользователя в репозитории
-    $user = $this->usersRepository->getUserByName($username);
-    } catch (UserNotFoundException $e) {
-    // Если пользователь не найден -
-    // возвращаем неуспешный ответ
-    return new ErrorResponse($e->getMessage());
+    public function handle(Request $request): Response
+    {
+        try {
+            $username = $request->query('username');
+        } catch (HttpException $e) {
+            return new ErrorResponse($e->getMessage());
+        }
+        try {
+            
+            $user = $this->usersRepository->getUserByName($username);
+        } catch (UserNotFoundException $e) {
+    
+            return new ErrorResponse($e->getMessage());
+        }
+        
+        return new SuccessfulResponse([
+            'username' => $user->getUserName(),
+            'name' => $user->getFirstName() . ' ' . $user->getLastName(),
+        ]);
     }
-    // Возвращаем успешный ответ
-    return new SuccessfulResponse([
-    'username' => $user->getUserName(),
-    'name' => $user->getFirstName() . ' ' . $user->getLastName(),
-    ]);
-}
 }

@@ -18,7 +18,7 @@ class User
         $this->firstName = $firstName;
     }
 
-    public function getUuid(): UUID 
+    public function getUuid(): UUID
     {
         return $this->uuid;
     }
@@ -56,12 +56,14 @@ class User
         return "Пользователь $this->uuid с именем $this->lastName и фамилией $this->firstName" . PHP_EOL;
     }
 
-	public function getUserName(): string {
-		return $this->userName;
-	}
+    public function getUserName(): string
+    {
+        return $this->userName;
+    }
 
-	public function setUserName(string $userName): self {
-		$this->userName = $userName;
-		return $this;
-	}
+    public function setUserName(string $userName): self
+    {
+        $this->userName = $userName;
+        return $this;
+    }
 }

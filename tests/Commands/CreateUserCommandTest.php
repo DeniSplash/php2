@@ -17,18 +17,17 @@ use PHPUnit\Framework\TestCase;
 class CreateUserCommandTest extends TestCase
 {
     public function testItThrowsAnExceptionWhenUserAlreadyExists(): void
-    { 
+    {
         $command = new CreateUserCommand(new DummyUsersRepository());
         $this->expectException(CommandExceptiom::class);
         $this->expectExceptionMessage('User already exists: Ivan');
         $command->handle(new Arguments(['username' => 'Ivan']));
     }
 
-//================================================================================================
+    //================================================================================================
     public function testItRequiresFirstName(): void
     {
-        $usersRepository = new class implements UserRepoInterfaces 
-        {
+        $usersRepository = new class implements UserRepoInterfaces {
             public function saveUser(User $user): void
             {
             }
@@ -48,8 +47,8 @@ class CreateUserCommandTest extends TestCase
         $this->expectExceptionMessage('Аргумент не найден: first_name');
         $command->handle(new Arguments(['username' => 'Ivan']));
     }
-    
-//================================================================================================
+
+    //================================================================================================
     private function makeUsersRepository(): UserRepoInterfaces
     {
         return new class implements UserRepoInterfaces {
@@ -74,45 +73,45 @@ class CreateUserCommandTest extends TestCase
         $this->expectException(ArgumentException::class);
         $this->expectExceptionMessage('Аргумент не найден: last_name');
         $command->handle(new Arguments([
-        'username' => 'Ivan',
-        'first_name' => 'Ivan',
+            'username' => 'Ivan',
+            'first_name' => 'Ivan',
         ]));
-    } 
+    }
 
-//================================================================================================
+    //================================================================================================
     public function testItSavesUserToRepository(): void
-{
-    $usersRepository = new class implements UserRepoInterfaces {
+    {
+        $usersRepository = new class implements UserRepoInterfaces {
 
-        private bool $called = false;
+            private bool $called = false;
 
-        public function saveUser(User $user): void
-        {
-            $this->called = true;
-        }
+            public function saveUser(User $user): void
+            {
+                $this->called = true;
+            }
 
-        public function getUserByUuid(UUID $uuid): User
-        {
-            throw new UserNotFoundException("Not found");
-        }
+            public function getUserByUuid(UUID $uuid): User
+            {
+                throw new UserNotFoundException("Not found");
+            }
 
-        public function getUserByName(string $username): User
-        {
-            throw new UserNotFoundException("Not found");
-        }
+            public function getUserByName(string $username): User
+            {
+                throw new UserNotFoundException("Not found");
+            }
 
-        public function wasCalled(): bool
-        {
-            return $this->called;
-        }
+            public function wasCalled(): bool
+            {
+                return $this->called;
+            }
         };
 
         $command = new CreateUserCommand($usersRepository);
 
         $command->handle(new Arguments([
-        'username' => 'Ivan',
-        'first_name' => 'Ivan',
-        'last_name' => 'Nikitin',
+            'username' => 'Ivan',
+            'first_name' => 'Ivan',
+            'last_name' => 'Nikitin',
         ]));
 
         $this->assertTrue($usersRepository->wasCalled());

@@ -15,16 +15,18 @@ use GeekBrains\LevelTwo\Http\Request;
 use GeekBrains\LevelTwo\Http\Response;
 use GeekBrains\LevelTwo\Http\SuccessfulResponse;
 use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 
 class CreateComment implements ActionInterface
 {
-    public function __construct(private CommentRepoInterfaces $commentRepoInterfaces)
+    public function __construct(
+        private CommentRepoInterfaces $commentRepoInterfaces,
+        private LoggerInterface $logger,
+        )
     {
     }
     public function handle(Request $request): Response
     {
-
-
         $newCommentUuid = UUID::random();
         try {
 
@@ -35,10 +37,12 @@ class CreateComment implements ActionInterface
                 $request->jsonBodyField('text'),
             );
         } catch (HttpException $e) {
+            $this->logger->warning("Comment already exists: $newCommentUuid");
             return new ErrorResponse($e->getMessage());
         }
 
         $this->commentRepoInterfaces->saveComment($comment);
+        $this->logger->info("Comment created: $newCommentUuid");
 
         return new SuccessfulResponse([
             'uuid' => (string) $newCommentUuid,

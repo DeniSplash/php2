@@ -11,11 +11,13 @@ use GeekBrains\LevelTwo\Http\Request;
 use GeekBrains\LevelTwo\Http\Response;
 use GeekBrains\LevelTwo\Http\SuccessfulResponse;
 use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 
 class CreateUser implements ActionInterface
 {
 
-    public function __construct(private UserRepoInterfaces $usersRepository, )
+    public function __construct(private UserRepoInterfaces $usersRepository, 
+    private LoggerInterface $logger,)
     {
     }
     public function handle(Request $request): Response
@@ -35,10 +37,13 @@ class CreateUser implements ActionInterface
 
 
         } catch (HttpException | InvalidArgumentException $e) {
+            $this->logger->warning("User already exists: $newUserUuid");
             return new ErrorResponse($e->getMessage());
         }
 
         $this->usersRepository->saveUser($user);
+        $this->logger->info("User created: $newUserUuid");
+        
 
         return new SuccessfulResponse([
             'uuid' => (string) $newUserUuid,

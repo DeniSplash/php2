@@ -4,6 +4,7 @@ namespace GeekBrains\LevelTwo\Http\Actions;
 
 use GeekBrains\LevelTwo\Blog\Exceptions\HttpException;
 use GeekBrains\LevelTwo\Blog\Exceptions\UserNotFoundException;
+use GeekBrains\LevelTwo\Blog\Http\Auth\IdentificationInterface;
 use GeekBrains\LevelTwo\Blog\Post;
 use GeekBrains\LevelTwo\Blog\Repositories\PostRepository\PostRepoInterfaces;
 use GeekBrains\LevelTwo\Blog\Repositories\UserRepository\UserRepoInterfaces;
@@ -13,44 +14,39 @@ use GeekBrains\LevelTwo\Http\Request;
 use GeekBrains\LevelTwo\Http\Response;
 use GeekBrains\LevelTwo\Http\SuccessfulResponse;
 use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 
 class CreatePost implements ActionInterface
 {
     public function __construct(
         private PostRepoInterfaces $postsRepository,
-        private UserRepoInterfaces $usersRepository,
+        private IdentificationInterface $identification,
+        private LoggerInterface $logger,
     )
     {
     }
     public function handle(Request $request): Response
     {
-
-        try {
-            $authorUuid = new UUID($request->jsonBodyField('author_uuid'));
-        } catch (HttpException | InvalidArgumentException $e) {
-            return new ErrorResponse($e->getMessage());
-        }
-
-        try {
-            $this->usersRepository->getUserByUuid($authorUuid);
-        } catch (UserNotFoundException $e) {
-            return new ErrorResponse($e->getMessage());
-        }
+        $author = $this->identification->user($request);
 
         $newPostUuid = UUID::random();
+
         try {
 
             $post = new Post(
                 $newPostUuid,
-                $authorUuid,
+                $author->getUuid(),
                 $request->jsonBodyField('title'),
                 $request->jsonBodyField('text'),
             );
         } catch (HttpException $e) {
+            $this->logger->warning("Post already exists: $newPostUuid");
             return new ErrorResponse($e->getMessage());
         }
 
         $this->postsRepository->savePost($post);
+
+        $this->logger->info("Post created: $newPostUuid");
 
         return new SuccessfulResponse([
             'uuid' => (string) $newPostUuid,

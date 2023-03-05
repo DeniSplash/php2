@@ -1,101 +1,132 @@
 <?php
 
-namespace GeekBrains\Blog\UnitTests\Commands;
+namespace GeekBrains\LevelTwo\Commands;
 
-use GeekBrains\LevelTwo\Blog\Commands\Arguments; 
-
+use GeekBrains\Blog\UnitTests\DummyLogger;
+use GeekBrains\LevelTwo\Blog\Commands\Arguments;
 use GeekBrains\LevelTwo\Blog\Commands\CreateUserCommand;
-use GeekBrains\LevelTwo\Blog\Exceptions\CommandExceptiom;
-use GeekBrains\LevelTwo\Blog\Exceptions\ArgumentException;
+use GeekBrains\LevelTwo\Blog\Exceptions\ArgumentsException;
+use GeekBrains\LevelTwo\Blog\Exceptions\CommandException;
 use GeekBrains\LevelTwo\Blog\Exceptions\UserNotFoundException;
-use GeekBrains\LevelTwo\Blog\Repositories\UserRepository\DummyUsersRepository;
-use GeekBrains\LevelTwo\Blog\Repositories\UserRepository\UserRepoInterfaces;
+use GeekBrains\LevelTwo\Blog\Repositories\UsersRepository\DummyUsersRepository;
+use GeekBrains\LevelTwo\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use GeekBrains\LevelTwo\Blog\User;
 use GeekBrains\LevelTwo\Blog\UUID;
 use PHPUnit\Framework\TestCase;
 
 class CreateUserCommandTest extends TestCase
 {
+
+    public function testItRequiresPassword(): void
+    {
+        $command = new CreateUserCommand(
+            $this->makeUsersRepository(),
+            new DummyLogger()
+        );
+        $this->expectException(ArgumentsException::class);
+        $this->expectExceptionMessage('No such argument: password');
+        $command->handle(new Arguments([
+            'username' => 'Ivan',
+        ]));
+    }
+
     public function testItThrowsAnExceptionWhenUserAlreadyExists(): void
     {
-        $command = new CreateUserCommand(new DummyUsersRepository());
-        $this->expectException(CommandExceptiom::class);
+        $command = new CreateUserCommand(new DummyUsersRepository(), new DummyLogger());
+
+        $this->expectException(CommandException::class);
+
         $this->expectExceptionMessage('User already exists: Ivan');
-        $command->handle(new Arguments(['username' => 'Ivan']));
+
+        $command->handle(new Arguments([
+            'username' => 'Ivan',
+            'password' => '123',
+        ]));
     }
 
-    //================================================================================================
+
     public function testItRequiresFirstName(): void
     {
-        $usersRepository = new class implements UserRepoInterfaces {
-            public function saveUser(User $user): void
+        $usersRepository = new class implements UsersRepositoryInterface
+        {
+            public function save(User $user): void
             {
             }
 
-            public function getUserByUuid(UUID $uuid): User
+            public function get(UUID $uuid): User
             {
+
                 throw new UserNotFoundException("Not found");
             }
-            public function getUserByName(string $userName): User
+
+            public function getByUsername(string $username): User
             {
+
+
                 throw new UserNotFoundException("Not found");
             }
         };
 
-        $command = new CreateUserCommand($usersRepository);
-        $this->expectException(ArgumentException::class);
-        $this->expectExceptionMessage('Аргумент не найден: first_name');
+        $command = new CreateUserCommand($usersRepository, new DummyLogger());
+
+        $this->expectException(ArgumentsException::class);
+        $this->expectExceptionMessage('No such argument: first_name');
+
         $command->handle(new Arguments(['username' => 'Ivan']));
-    }
-
-    //================================================================================================
-    private function makeUsersRepository(): UserRepoInterfaces
-    {
-        return new class implements UserRepoInterfaces {
-            public function saveUser(User $user): void
-            {
-            }
-
-            public function getUserByUuid(UUID $uuid): User
-            {
-                throw new UserNotFoundException("Not found");
-            }
-            public function getUserByName(string $username): User
-            {
-                throw new UserNotFoundException("Not found");
-            }
-        };
     }
 
     public function testItRequiresLastName(): void
     {
-        $command = new CreateUserCommand($this->makeUsersRepository());
-        $this->expectException(ArgumentException::class);
-        $this->expectExceptionMessage('Аргумент не найден: last_name');
+        $command = new CreateUserCommand($this->makeUsersRepository(), new DummyLogger());
+        $this->expectException(ArgumentsException::class);
+        $this->expectExceptionMessage('No such argument: last_name');
         $command->handle(new Arguments([
             'username' => 'Ivan',
             'first_name' => 'Ivan',
         ]));
     }
 
-    //================================================================================================
-    public function testItSavesUserToRepository(): void
+    private function makeUsersRepository(): UsersRepositoryInterface
     {
-        $usersRepository = new class implements UserRepoInterfaces {
-
-            private bool $called = false;
-
-            public function saveUser(User $user): void
+        return new class implements UsersRepositoryInterface
+        {
+            public function save(User $user): void
             {
-                $this->called = true;
             }
 
-            public function getUserByUuid(UUID $uuid): User
+            public function get(UUID $uuid): User
             {
                 throw new UserNotFoundException("Not found");
             }
 
-            public function getUserByName(string $username): User
+            public function getByUsername(string $username): User
+
+            {
+                throw new UserNotFoundException("Not found");
+            }
+        };
+    }
+
+
+    public function testItSavesUserToRepository(): void
+    {
+        $usersRepository = new class implements UsersRepositoryInterface
+        {
+
+            private bool $called = false;
+
+            public function save(User $user): void
+            {
+                $this->called = true;
+            }
+
+            public function get(UUID $uuid): User
+            {
+
+                throw new UserNotFoundException("Not found");
+            }
+
+            public function getByUsername(string $username): User
             {
                 throw new UserNotFoundException("Not found");
             }
@@ -106,7 +137,7 @@ class CreateUserCommandTest extends TestCase
             }
         };
 
-        $command = new CreateUserCommand($usersRepository);
+        $command = new CreateUserCommand($usersRepository, new DummyLogger());
 
         $command->handle(new Arguments([
             'username' => 'Ivan',
@@ -116,8 +147,4 @@ class CreateUserCommandTest extends TestCase
 
         $this->assertTrue($usersRepository->wasCalled());
     }
-
-//================================================================================================
-
-
 }

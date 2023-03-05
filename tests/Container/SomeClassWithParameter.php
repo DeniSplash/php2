@@ -1,13 +1,12 @@
 <?php
+
 namespace GeekBrains\Blog\UnitTests\Container;
 
 class SomeClassWithParameter
 {
-
     public function __construct(
         private int $value
-    )
-    {
+    ) {
     }
     public function value(): int
     {

@@ -6,8 +6,11 @@ use GeekBrains\LevelTwo\Blog\Exceptions\InvalidArgumentException;
 
 class UUID
 {
-    public function __construct(private string $uuidString)
-    {
+
+    public function __construct(
+        private string $uuidString
+    ) {
+
         if (!uuid_is_valid($uuidString)) {
             throw new InvalidArgumentException(
                 "Malformed UUID: $this->uuidString"

@@ -2,67 +2,60 @@
 
 namespace GeekBrains\LevelTwo\Blog;
 
+
 class Post
 {
-	private UUID $uuid;
-	private UUID $uuidUser;
-	private string $article;
-	private string $text;
+    public function __construct(
+        private UUID   $uuid,
+        private User   $user,
+        private string $title,
+        private string $text,
+    ) {
+    }
 
-	public function __construct(UUID $uuid, UUID $uuidUser, string $article, string $text)
-	{
-		$this->uuid = $uuid;
-		$this->uuidUser = $uuidUser;
-		$this->article = $article;
-		$this->text = $text;
-	}
+    public function uuid(): UUID
+    {
+        return $this->uuid;
+    }
 
-	public function getUuid(): UUID
-	{
-		return $this->uuid;
-	}
+    public function setUuid(UUID $uuid): void
+    {
+        $this->uuid = $uuid;
+    }
 
-	public function setUuid(UUID $uuid): self
-	{
-		$this->uuid = $uuid;
-		return $this;
-	}
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
 
-	public function getUuidUser(): UUID
-	{
-		return $this->uuidUser;
-	}
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
+    }
 
-	public function setIdUser(UUID $uuidUser): self
-	{
-		$this->uuidUser = $uuidUser;
-		return $this;
-	}
+    public function getUser(): User
+    {
+        return $this->user;
+    }
 
-	public function getArticle(): string
-	{
-		return $this->article;
-	}
+    public function setUser(User $user): void
+    {
+        $this->user = $user;
+    }
 
-	public function setArticle(string $article): self
-	{
-		$this->article = $article;
-		return $this;
-	}
+    public function getText(): string
+    {
+        return $this->text;
+    }
 
-	public function getText(): string
-	{
-		return $this->text;
-	}
+    public function setText(string $text): Post
+    {
+        $this->text = $text;
+        return $this;
+    }
 
-	public function setText(string $text): self
-	{
-		$this->text = $text;
-		return $this;
-	}
-
-	public function __toString(): string
-	{
-		return "Пост $this->uuid, пользователя $this->uuidUser, загаловок $this->article, текст $this->text" . PHP_EOL;
-	}
+    public function __toString()
+    {
+        return $this->user . ' пишет: ' . $this->text . PHP_EOL;
+    }
 }

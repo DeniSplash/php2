@@ -1,8 +1,8 @@
 <?php
 
-namespace GeekBrains\LevelTwo\Blog\Http\Auth;
-use GeekBrains\LevelTwo\Blog\Exceptions\AppException;
+namespace GeekBrains\LevelTwo\Blog\Exceptions;
 
-final class AuthException extends AppException
+class AuthException extends AppException
 {
+
 }

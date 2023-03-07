@@ -1,5 +1,7 @@
 <?php
-namespace GeekBrains\LevelTwo\Blog\Http\Auth;
+
+namespace GeekBrains\LevelTwo\Http\Auth;
+
 use GeekBrains\LevelTwo\Blog\User;
 use GeekBrains\LevelTwo\Http\Request;
 

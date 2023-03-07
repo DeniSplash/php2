@@ -7,7 +7,7 @@ use GeekBrains\LevelTwo\Blog\UUID;
 
 interface LikesRepositoryInterface
 {
-    public function save(Like $like) : void;
-    public function getByPostUuid(UUID $uuid) : array;
-    public function checkUserLikeForPostExists($postUuid, $userUuid): void;
+    public function save(Like $like): void;
+    public function getByPostUuid(UUID $uuid): array;
+    public function checkUserLikeForPostExists($postUuid, $userUuid);
 }

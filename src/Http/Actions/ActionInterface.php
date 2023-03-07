@@ -1,9 +1,11 @@
 <?php
 
 namespace GeekBrains\LevelTwo\Http\Actions;
-use GeekBrains\LevelTwo\Http\Request;
-use GeekBrains\LevelTwo\Http\Response;
+
+use GeekBrains\LevelTwo\http\Request;
+use GeekBrains\LevelTwo\http\Response;
+
 interface ActionInterface
-{ 
+{
     public function handle(Request $request): Response;
 }

@@ -2,68 +2,74 @@
 
 namespace GeekBrains\LevelTwo\Blog;
 
+use GeekBrains\LevelTwo\Person\Name;
+
 class User
 {
-    private UUID $uuid;
-
-    private string $userName;
-    private string $lastName;
-    private string $firstName;
-
-    public function __construct(UUID $uuid, string $userName, string $lastName, string $firstName)
-    {
-        $this->uuid = $uuid;
-        $this->userName = $userName;
-        $this->lastName = $lastName;
-        $this->firstName = $firstName;
+    public function __construct(
+        private UUID   $uuid,
+        private Name   $name,
+        private string $username,
+        private string $hashedPassword
+    ) {
     }
 
-    public function getUuid(): UUID
+    public function hashedPassword(): string
     {
-        return $this->uuid;
+        return $this->hashedPassword;
     }
 
-    public function setUuid(UUID $uuid): self
+    private static function hash(string $password, UUID $uuid): string
     {
-        $this->uuid = $uuid;
-        return $this;
+        return hash('sha256',  $uuid . $password);
     }
 
-    public function getLastName(): string
+    public function checkPassword(string $password): bool
     {
-        return $this->lastName;
-    }
-
-    public function setLastName(string $lastName): self
-    {
-        $this->lastName = $lastName;
-        return $this;
-    }
-
-    public function getFirstName(): string
-    {
-        return $this->firstName;
-    }
-
-    public function setFirstName(string $firstName): self
-    {
-        $this->firstName = $firstName;
-        return $this;
+        return $this->hashedPassword === self::hash($password, $this->uuid);
     }
 
     public function __toString(): string
     {
-        return "Пользователь $this->uuid с именем $this->lastName и фамилией $this->firstName" . PHP_EOL;
+        return "Юзер $this->uuid с именем $this->name и логином $this->username." . PHP_EOL;
     }
 
-    public function getUserName(): string
-    {
-        return $this->userName;
+    public static function createFrom(
+        string $username,
+        string $password,
+        Name   $name
+    ): self {
+        $uuid = UUID::random();
+        return new self(
+            $uuid,
+            $name,
+            $username,
+            self::hash($password, $uuid),
+        );
     }
 
-    public function setUserName(string $userName): self
+    public function uuid(): UUID
     {
-        $this->userName = $userName;
-        return $this;
+        return $this->uuid;
+    }
+
+    public function name(): Name
+    {
+        return $this->name;
+    }
+
+    public function setName(Name $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function username(): string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): void
+    {
+        $this->username = $username;
     }
 }

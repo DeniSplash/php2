@@ -2,60 +2,54 @@
 
 namespace GeekBrains\LevelTwo\Blog;
 
-class Comment 
+class Comment
 {
-    private UUID $uuid;
-    private UUID $uuidUser;
-    private UUID $uuidPost;
-    private string $text;
 
-    public function __construct(UUID $uuid, UUID $uuidUser, UUID $uuidPost, string $text)
-    {
-        $this->uuid = $uuid;
-		$this->uuidPost = $uuidPost;
-        $this->uuidUser = $uuidUser;
-        $this->text = $text;
-
+    public function __construct(
+        private UUID $uuid,
+        private User $user,
+        private Post $post,
+        private string $text
+    ) {
     }
 
-	public function getUuid(): UUID {
-		return $this->uuid;
-	}
-	
-	public function setUuid(UUID $uuid): self {
-		$this->uuid = $uuid;
-		return $this;
-	}
-
-	public function getUuidUser(): UUID {
-		return $this->uuidUser;
-	}
-	
-	public function setUuidUser(UUID $uuidUser): self {
-		$this->uuidUser = $uuidUser;
-		return $this;
-	}
-
-	public function getUuidPost(): UUID {
-		return $this->uuidPost;
-	}
-	
-	public function setIdPost(UUID $uuidPost): self {
-		$this->uuidPost = $uuidPost;
-		return $this;
-	}
-
-	public function getText(): string {
-		return $this->text;
-	}
-	
-	public function setText(string $text): self {
-		$this->text = $text;
-		return $this;
-	}
-
-    public function __toString(): string
+    public function uuid(): UUID
     {
-        return "Комментарий $this->uuid, к посту $this->uuidPost, текст $this->text" . PHP_EOL;
+        return $this->uuid;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): void
+    {
+        $this->user = $user;
+    }
+
+    public function getPost(): Post
+    {
+        return $this->post;
+    }
+
+    public function setPost(Post $post): void
+    {
+        $this->post = $post;
+    }
+
+    public function getText(): string
+    {
+        return $this->text;
+    }
+
+    public function setText(string $text): void
+    {
+        $this->text = $text;
+    }
+
+    public function __toString()
+    {
+        return $this->user . " пишет Коммент " . $this->text;
     }
 }

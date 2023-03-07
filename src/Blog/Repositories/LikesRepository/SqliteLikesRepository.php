@@ -8,7 +8,6 @@ use GeekBrains\LevelTwo\Blog\Like;
 use GeekBrains\LevelTwo\Blog\UUID;
 use GeekBrains\LevelTwo\Blog\Exceptions\LikeAlreadyExists;
 
-
 class SqliteLikesRepository implements LikesRepositoryInterface
 {
     private \PDO $connection;

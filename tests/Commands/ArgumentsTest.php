@@ -1,21 +1,24 @@
 <?php
 
-namespace GeekBrains\LevelTwo\Blog\UniTests\Commands;
+namespace GeekBrains\LevelTwo\Blog\UnitTests\Commands;
 
-use PHPUnit\Framework\TestCase;
 use GeekBrains\LevelTwo\Blog\Commands\Arguments;
-use GeekBrains\LevelTwo\Blog\Exceptions\ArgumentException;
+use GeekBrains\LevelTwo\Blog\Exceptions\ArgumentsException;
+use PHPUnit\Framework\TestCase;
 
 class ArgumentsTest extends TestCase
 {
     public function testItReturnsArgumentsValueByName(): void
     {
 
-        $arguments = new Arguments(['some_key' => 'some_value']);
+        $arguments = new Arguments(['some_key' => 123]);
+
 
         $value = $arguments->get('some_key');
 
-        $this->assertEquals('some_value', $value);
+
+        $this->assertSame('123', $value);
+        $this->assertIsString($value);
     }
 
     public function testItThrowsAnExceptionWhenArgumentIsAbsent(): void
@@ -23,12 +26,21 @@ class ArgumentsTest extends TestCase
 
         $arguments = new Arguments([]);
 
-        $this->expectException(ArgumentException::class);
+        $this->expectException(ArgumentsException::class);
 
-        $this->expectExceptionMessage("Аргумент не найден: some_key");
+        $this->expectExceptionMessage("No such argument: some_key");
 
         $arguments->get('some_key');
     }
+
+
+    public function testItConvertsArgumentsToStrings($inputValue, $expectedValue): void
+    {
+        $arguments = new Arguments(['some_key' => $inputValue]);
+        $value = $arguments->get('some_key');
+        $this->assertEquals($expectedValue, $value);
+    }
+
 
     public function argumentsProvider(): iterable
     {
@@ -39,15 +51,5 @@ class ArgumentsTest extends TestCase
             [123, '123'],
             [12.3, '12.3'],
         ];
-    }
-
-    /**
-     * @dataProvider argumentsProvider
-     */
-    public function testItConvertsArgumentsToStrings($inputValue, $expectedValue): void
-    {
-        $arguments = new Arguments(['some_key' => $inputValue]);
-        $value = $arguments->get('some_key');
-        $this->assertEquals($expectedValue, $value);
     }
 }

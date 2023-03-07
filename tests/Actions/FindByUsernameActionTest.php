@@ -1,16 +1,16 @@
 <?php
 
-namespace GeekBrains\LevelTwo\tests\Actions;
+namespace Actions;
 
-
-use GeekBrains\LevelTwo\Http\Actions\FindByUsername;
-use GeekBrains\LevelTwo\Http\ErrorResponse;
-use GeekBrains\LevelTwo\Http\Request;
-use GeekBrains\LevelTwo\Http\SuccessfulResponse;
 use GeekBrains\LevelTwo\Blog\Exceptions\UserNotFoundException;
-use GeekBrains\LevelTwo\Blog\Repositories\UserRepository\UserRepoInterfaces;
+use GeekBrains\LevelTwo\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use GeekBrains\LevelTwo\Blog\User;
 use GeekBrains\LevelTwo\Blog\UUID;
+use GeekBrains\LevelTwo\http\Actions\Users\FindByUsername;
+use GeekBrains\LevelTwo\http\ErrorResponse;
+use GeekBrains\LevelTwo\http\Request;
+use GeekBrains\LevelTwo\http\SuccessfulResponse;
+use GeekBrains\LevelTwo\Person\Name;
 use PHPUnit\Framework\TestCase;
 
 class FindByUsernameActionTest extends TestCase
@@ -19,27 +19,19 @@ class FindByUsernameActionTest extends TestCase
     public function testItReturnsErrorResponseIfNoUsernameProvided(): void
     {
 
-        $request = new Request([], [], '');
-
+        $request = new Request([], [], "");
         $usersRepository = $this->usersRepository([]);
 
         $action = new FindByUsername($usersRepository);
-
         $response = $action->handle($request);
-
         $this->assertInstanceOf(ErrorResponse::class, $response);
-
-        $this->expectOutputString('{"success":false,"reason":"No such query param
-in the request: username"}');
-
+        $this->expectOutputString('{"success":false,"reason":"No such query param in the request: username"}');
         $response->send();
     }
 
     public function testItReturnsErrorResponseIfUserNotFound(): void
     {
-
-        $request = new Request(['username' => 'user'], [], '');
-
+        $request = new Request(['username' => 'ivan'], [], '');
         $usersRepository = $this->usersRepository([]);
         $action = new FindByUsername($usersRepository);
         $response = $action->handle($request);
@@ -49,46 +41,50 @@ in the request: username"}');
     }
 
     public function testItReturnsSuccessfulResponse(): void
+
     {
         $request = new Request(['username' => 'ivan'], [], '');
-
         $usersRepository = $this->usersRepository([
             new User(
                 UUID::random(),
+                new Name('Ivan', 'Nikitin'),
                 'ivan',
-                'Ivan',
-                'Nikitin'
+                'password'
+
             ),
         ]);
         $action = new FindByUsername($usersRepository);
         $response = $action->handle($request);
 
         $this->assertInstanceOf(SuccessfulResponse::class, $response);
-        $this->expectOutputString('{"success":true,"data":{"username":"ivan","name":"Iva
-    n Nikitin"}}');
+        $this->expectOutputString('{"success":true,"data":{"username":"ivan","name":"Ivan Nikitin"}}');
         $response->send();
     }
 
-    private function usersRepository(array $users): UserRepoInterfaces
+
+    private function usersRepository(array $users): UsersRepositoryInterface
     {
 
-        return new class ($users) implements UserRepoInterfaces {
+        return new class($users) implements UsersRepositoryInterface
+        {
             public function __construct(
                 private array $users
-            )
+            ) {
+            }
+
+            public function save(User $user): void
             {
             }
-            public function saveUser(User $user): void
-            {
-            }
-            public function getUserByUuid(UUID $uuid): User
+
+            public function get(UUID $uuid): User
             {
                 throw new UserNotFoundException("Not found");
             }
-            public function getUserByName(string $username): User
+
+            public function getByUsername(string $username): User
             {
                 foreach ($this->users as $user) {
-                    if ($user instanceof User && $username === $user->getUserName()) {
+                    if ($user instanceof User && $username === $user->username()) {
                         return $user;
                     }
                 }

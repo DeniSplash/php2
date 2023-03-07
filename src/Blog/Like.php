@@ -8,8 +8,7 @@ class Like
         private UUID $uuid,
         private UUID $post_id,
         private UUID $user_id,
-    )
-    {
+    ) {
     }
 
     public function uuid(): UUID
@@ -41,5 +40,4 @@ class Like
     {
         $this->user_id = $user_id;
     }
-
 }
